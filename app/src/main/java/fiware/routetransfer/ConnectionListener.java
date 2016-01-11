@@ -9,6 +9,8 @@ import android.os.Message;
 import android.util.Log;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -64,14 +66,32 @@ public class ConnectionListener extends Thread {
 
                 Log.d(Application.TAG, "Connected!!!");
 
-                byte[] buffer = new byte[100];
-                int bytesRead = bts.getInputStream().read(buffer);
+                byte[] buffer = new byte[256];
+                InputStream input = bts.getInputStream();
+                int bytesRead = input.read(buffer);
                 String coords = new String(Arrays.copyOf(buffer, bytesRead));
                 Log.d(Application.TAG, "Coordinates: " + coords);
 
-                bts.close();
                 // Now send data to the UI part
                 sendMessage(coords);
+
+                OutputStream output = bts.getOutputStream();
+                output.write(new String("bye").getBytes());
+
+                try {
+                    Thread.currentThread().sleep(2000);
+                }
+                catch(InterruptedException ie) { }
+
+                try {
+                    output.close();
+                    input.close();
+                    bts.close();
+                }
+                catch(IOException ioe) {
+                    Log.e(Application.TAG, "While closing socket: " + ioe);
+                }
+
             }
         } catch (IOException e) {
             Log.e(Application.TAG, "listen() failed", e);
