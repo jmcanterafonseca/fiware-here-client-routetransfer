@@ -8,3 +8,4 @@
 *.apk
 /app/libs
 /app/src/main/jniLibs/
+/app/src/main/java/fiware/routetransfer/MapsIntentBuilder.java

@@ -89,7 +89,7 @@ public class ConnectionListener extends Thread {
                     bts.close();
                 }
                 catch(IOException ioe) {
-                    Log.e(Application.TAG, "While closing socket: " + ioe);
+                    Log.e(Application.TAG, "Error while closing socket: " + ioe);
                 }
 
             }

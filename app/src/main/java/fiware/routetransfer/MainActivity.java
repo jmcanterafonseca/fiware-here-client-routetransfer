@@ -4,7 +4,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -43,28 +42,29 @@ public class MainActivity extends AppCompatActivity {
             if(msg.what == Application.COORDS_MSG) {
                 String data = msg.getData().getString(Application.COORDS_KEY);
                 String[] destData = data.split(";");
-                String coords = destData[0];
-                String destination = destData[1];
+                String originCoords = destData[0];
+                String originName = destData[1];
+                String destCoords = destData[2];
+                String destName = destData[3];
 
                 NotificationCompat.Builder builder =
                         new NotificationCompat.Builder(Application.activity)
                                 .setSmallIcon(R.drawable.car)
                                 .setContentTitle("FIWARE-HERE")
-                                .setContentText("Click to continue route to " + destination);
+                                .setContentText("Click to continue route to " + destName);
 
                 builder.setAutoCancel(true);
                 builder.setStyle(new NotificationCompat.InboxStyle());
                 builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
                 builder.setVibrate(new long[]{1000, 1000});
 
-                int notificationId = coords.hashCode();
+                int notificationId = destCoords.hashCode();
 
                 NotificationManager mNotifyMgr =
                         (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                        Uri.parse("google.navigation:q=" + coords));
-                intent.setPackage("com.here.app.maps");
+                Intent intent = MapsIntentBuilder.build(originCoords, originName,
+                        destCoords, destName);
 
                 PendingIntent notifHandler = PendingIntent.getActivity(
                         Application.activity, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
